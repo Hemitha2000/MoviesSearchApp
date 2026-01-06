@@ -84,7 +84,7 @@ function SearchMovies() {
               <MovieList key={movie.imdbID} movie={movie} />
             ))}
           </div>
-          <div className="flex justify-center items-center gap-4 absolute bottom-0 bg-white left-0 right-0 p-2">
+          <div className="md:bottom-0 flex justify-center items-center gap-4 absolute bottom-10 bg-white left-0 right-0 p-2 ">
             <button
               disabled={currentPage === 1}
               onClick={() => handleSubmit(currentPage - 1)}
