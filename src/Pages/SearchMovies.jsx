@@ -2,24 +2,49 @@ import { useState,useEffect } from "react";
 import PageTitle from "../Components/pageTitle"
 import MovieList from "../Components/MovieList"
 import noFile from "../assets/notfound.png"
+import { height } from "@fortawesome/free-solid-svg-icons/fa0";
 function SearchMovies() {
 
   const [searchText, setSearchText] = useState("");
   const [movieList, setmovieList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
+  const [screenHeight, setScreenHeight] = useState('');
   const [type, setType] = useState("");
   useEffect(() => {
   if (searchText) {
+
     handleSubmit(1);
   }
 }, [type]);
+const getPageNumbers = () => {
+  const pages = [];
+  const maxVisible = 3; // how many numbers to show
+  let start = Math.max(1, currentPage - 1);
+  let end = Math.min(totalPages, start + maxVisible - 1);
+
+  if (currentPage === totalPages) {
+    start = Math.max(1, totalPages - maxVisible + 1);
+  }
+
+  for (let i = start; i <= end; i++) {
+    pages.push(i);
+  }
+
+  return pages;
+};
   const handleSubmit = (page = 1 , selectedType = type) => {
     if (!searchText) {
       setmovieList([]);
       setTotalResults(0);
       return;
     }
+    if (window.matchMedia("(min-width: 768px)").matches){
+        setScreenHeight(window.innerHeight-230+'px');
+    }else{
+      setScreenHeight(100+'%');
+    }
+     
     console.log(type)
     const typeParam = type ? `&type=${type}` : "";
     fetch(`https://www.omdbapi.com/?apikey=2ba5482d&s=${searchText}&page=${page}${typeParam}`)
@@ -49,7 +74,7 @@ function SearchMovies() {
     ml-0 md:ml-[16.666%]
     ${movieList.length === 0
       ? "min-h-screen"
-      : "h-screen overflow-hidden"}
+      : "h-screen"}
   `}
 >
       <PageTitle title={"Search Movie"} />
@@ -78,33 +103,70 @@ function SearchMovies() {
       {movieList.length > 0 && totalPages > 0 && (
         <div className="relative">
             <h3 className="text-xl ml-5 "> <b>Search Result</b></h3>
-          <div className="grid grid-cols-1 gap-4 p-4 pb-[8rem] sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 max-h-[80vh] overflow-auto">
-
+          <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 overflow-auto" style={{ height: `${screenHeight}` }}>
+         
             {movieList.map((movie) => (
-              <MovieList key={movie.imdbID} movie={movie} />
+              <MovieList key={movie.imdbID} movie={movie} search={searchText}/>
             ))}
           </div>
-          <div className="md:bottom-0 flex justify-center items-center gap-4 absolute bottom-10 bg-white left-0 right-0 p-2 ">
-            <button
-              disabled={currentPage === 1}
-              onClick={() => handleSubmit(currentPage - 1)}
-              className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-            >
-              Prev
-            </button>
+          <div className="flex justify-center items-center gap-2 bg-white p-3">
 
-            <span className="text-sm font-medium">
-              Page {currentPage} of {totalPages}
-            </span>
+  <button
+    disabled={currentPage === 1}
+    onClick={() => handleSubmit(currentPage - 1)}
+    className="px-3 py-2 border rounded disabled:opacity-50"
+  >
+    <i className="fa-solid fa-arrow-left"></i>
+  </button>
 
-            <button
-              disabled={currentPage === totalPages}
-              onClick={() => handleSubmit(currentPage + 1)}
-              className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
+  {currentPage > 2 && (
+    <>
+      <button
+        onClick={() => handleSubmit(1)}
+        className="px-4 py-2 border rounded"
+      >
+        1
+      </button>
+      <span className="px-2">…</span>
+    </>
+  )}
+
+  {getPageNumbers().map((page) => (
+    <button
+      key={page}
+      onClick={() => handleSubmit(page)}
+      className={`px-4 py-2 border rounded ${
+        currentPage === page 
+          ? "bg-[#cd82e7] text-white"
+          : "bg-white"
+      }`}
+    >
+      {page}
+    </button>
+  ))}
+
+  {currentPage < totalPages - 1 && (
+    <>
+      <span className="px-2">…</span>
+      <button
+        onClick={() => handleSubmit(totalPages)}
+        className="px-4 py-2 border rounded"
+      >
+        {totalPages}
+      </button>
+    </>
+  )}
+
+
+  <button
+    disabled={currentPage === totalPages}
+    onClick={() => handleSubmit(currentPage + 1)}
+    className="px-3 py-2 border rounded disabled:opacity-50"
+  >
+    <i className="fa-solid fa-arrow-right"></i>
+  </button>
+</div>
+
         </div>
       )}
       {movieList.Response == "False" && (

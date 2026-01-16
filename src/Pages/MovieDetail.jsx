@@ -9,7 +9,16 @@ function MovieDetail() {
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+const goBack= () => {
+let currentUrl = window.location.href;
+console.log(currentUrl.split('?').pop());
+if(currentUrl.split('?').length == 2){
+navigate(`/?${currentUrl.split('?').pop()}`);
+}else{
+  navigate(`/`);
+}
+        // navigate(`/`);
+     }
   useEffect(() => {
     fetch(`https://www.omdbapi.com/?apikey=2ba5482d&i=${imdbID}&plot=full`)
       .then(res => res.json())
@@ -35,7 +44,7 @@ function MovieDetail() {
     return (
       <div className="p-10 text-center">
         <p>{error}</p>
-        <button onClick={() => navigate(-1)}>Go Back</button>
+        <button onClick={() => goBack()}>Go Back</button>
       </div>
     );
   }
@@ -89,7 +98,7 @@ function MovieDetail() {
         <div className="p-4">
             <button
         className="text-blue-600 flex justify-center items-center"
-        onClick={() => navigate(-1)}
+        onClick={() => goBack()}
       >
        <span className="relative top-[-2px] mr-1 text-[24px]">←</span>  <span className="text-sm block">Back</span>
       </button>
