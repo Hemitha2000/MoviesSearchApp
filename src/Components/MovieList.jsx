@@ -6,7 +6,7 @@ export function MovieList({ movie,search}) {
         navigate(`/movie/${data.imdbID}?${search}`);
      }
   return (
-    <div className="rounded-lg border bg-white shadow-sm hover:shadow-md transition relative bg-gray-800" onClick={() => openSingleMovie(movie)}>
+    <div className="rounded-lg border shadow-sm hover:shadow-md transition relative bg-gray-800" onClick={() => openSingleMovie(movie)}>
       
         <img className="w-full object-cover" src={movie.Poster} alt={movie.Title} />
         <h3 className="text-white px-[15px] py-[10px] text-sm flex items-center"><span>
